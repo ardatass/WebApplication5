@@ -1,0 +1,567 @@
+﻿@model IEnumerable<WebApplication5.Models.Musteri>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Müşteri Listesi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <style>
+        /* Mevcut CSS stilleriniz */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+            .search-bar input {
+                padding: 8px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+                width: 250px;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #dee2e6;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-edit, .btn-activity {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-right: 5px;
+        }
+
+            .btn-edit:hover, .btn-activity:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            .close:hover, .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        #activityForm {
+            width: 80%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #activityNote {
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        #activityType {
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-activity {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+            width: 50%;
+        }
+
+            .btn-activity:hover {
+                background-color: #0056b3;
+            }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #editForm input[type="text"], #editForm input[type="email"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+            .btn-edit:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+
+        #editForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+      
+
+        /* Modal İçin Diğer Stiller */
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            .close:hover, .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #activityForm select, #activityForm textarea, #activityForm input[type="date"] {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        #activityForm textarea {
+            resize: vertical;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Müşteri Listesi</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Müşteri ID, Ad Soyad, Email, Telefon ile ara..." onkeyup="searchTable()">
+        </div>
+        <table id="customerTable">
+            <thead>
+                <tr>
+                    <th>Müşteri ID</th>
+                    <th>Ad Soyad</th>
+                    <th>Email</th>
+                    <th>Telefon</th>
+                    <th>Kayıt Tarihi</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var musteri in Model)
+                    {
+                        <tr class="customer-row">
+                            <td>@musteri.MusteriID</td>
+                            <td>@musteri.AdSoyad</td>
+                            <td>@musteri.Emaıl</td>
+                            <td>@musteri.Telefon</td>
+                            <td>@musteri.KayıtTarihi.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td>
+                                <button class="btn-edit" onclick="openEditModal('@musteri.MusteriID', '@musteri.AdSoyad', '@musteri.Emaıl', '@musteri.Telefon')">Düzenle</button>
+                                <button class="btn-activity" onclick="openActivityModal('@musteri.MusteriID', '@musteri.AdSoyad', '@musteri.Emaıl', '@musteri.Telefon')">Aktivite Ekle</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Düzenleme Modal yapısı -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Müşteri Düzenle</h2>
+            <form id="editForm" method="post" action="@Url.Action("Edit", "Home")" onsubmit="handleEditSubmit(event)">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="musteriID" name="MusteriID">
+
+                <label for="adSoyad">Ad Soyad</label>
+                <input type="text" id="adSoyad" name="AdSoyad" required>
+
+                <label for="emaıl">Email</label>
+                <input type="email" id="emaıl" name="Emaıl" required>
+
+                <label for="telefon">Telefon</label>
+                <input type="text" id="telefon" name="Telefon" required>
+
+                <button type="submit" class="btn-edit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aktivite Modal yapısı -->
+    <div id="activityModal" class="modal">
+        <div class="modal-content">
+            <div class="card border-0">
+                <div class="card-header border-0">
+                    <span class="close" onclick="closeActivityModal()">&times;</span>
+                    <h3>
+                        <span id="customerID">NO:</span>&nbsp; |
+                        <span id="customerName"></span>&nbsp; |
+                        <span id="customerEmail"></span>&nbsp; |
+                        <span class="badge badge-pill badge-lg bg-primary" id="customerPhone"></span>
+                    </h3>
+                    
+                </div>
+            </div>
+
+                    <h3 class="mt-4">Aktivite Ekle</h3>
+                    <form id="activityForm" method="post" action="@Url.Action("Create", "Aktivite")" onsubmit="return handleActivitySubmit()">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="activityMusteriID" name="MusteriID">
+
+                        <label for="activityType">Aktivite Tipi</label>
+                        <select id="activityType" name="AktiviteTipi" required>
+                            <option value="TeknikDestek">Teknik Destek</option>
+                            <option value="Sikayet">Şikayet</option>
+                            <option value="Genel">Genel</option>
+                        </select>
+
+                        <label for="activityNote">Not</label>
+                        <textarea id="activityNote" name="Aciklama" rows="5" required></textarea>
+
+                        <label for="activityDate">Tarih</label>
+                        <input type="date" id="activityDate" name="AktiviteTarihi" required>
+
+                        <button type="submit" class="btn-activity">Ekle</button>
+                    </form>
+
+
+
+                    <h3>Mevcut Aktiviteler</h3>
+                    <table id="activityTable">
+                        <thead>
+                            <tr>
+                                <th>Aktivite Tipi</th>
+                                <th>Not</th>
+                                <th>Tarih</th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="activityTableBody">
+                            <!-- Existing activities will be inserted here -->
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+            <script>
+        function searchTable() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("customerTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+                td = tr[i].getElementsByTagName("td");
+
+                for (j = 0; j < td.length - 1; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function hideCustomerRows() {
+            var table = document.getElementById("customerTable");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < tr.length; i++) {
+                tr[i].style.display = "none";
+            }
+        }
+
+        window.onload = function () {
+            hideCustomerRows();
+        };
+
+        function openEditModal(musteriID, adSoyad, emaıl, telefon) {
+            document.getElementById("musteriID").value = musteriID;
+            document.getElementById("adSoyad").value = adSoyad;
+            document.getElementById("emaıl").value = emaıl;
+            document.getElementById("telefon").value = telefon;
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        function openActivityModal(musteriID, adSoyad, emaıl, telefon) {
+            debugger;
+    // Müşteri bilgilerini modalda göster
+    document.getElementById("customerID").textContent = musteriID;
+    document.getElementById("customerName").textContent = adSoyad;
+    document.getElementById("customerEmail").textContent = emaıl;
+    document.getElementById("customerPhone").textContent = telefon;
+
+    // Formdaki gizli müşteri ID'sini ayarla
+    document.getElementById("activityMusteriID").value = musteriID;
+
+    // Aktivite tarihini otomatik olarak doldur
+    document.getElementById("activityDate").valueAsDate = new Date();
+
+    // Fetch and display existing activities
+    fetchActivities(musteriID);
+
+    // Modalı göster
+    document.getElementById("activityModal").style.display = "block";
+}
+
+function fetchActivities(musteriID) {
+    $.ajax({
+        url: '@Url.Action("GetActivities", "Aktivite")',
+        type: 'GET',
+        data: { musteriID: musteriID },
+        success: function (activities) {
+            var tbody = document.getElementById("activityTableBody");
+            tbody.innerHTML = ''; // Clear existing rows
+
+            activities.forEach(function (activity) {
+                var row = document.createElement("tr");
+
+                var cell1 = document.createElement("td");
+                cell1.textContent = activity.AktiviteTipi;
+                row.appendChild(cell1);
+
+                var cell2 = document.createElement("td");
+                cell2.textContent = activity.Aciklama;
+                row.appendChild(cell2);
+
+                var cell3 = document.createElement("td");
+                // activity.AktiviteTarihi tarihini DateTime'a çevirme
+                var date = new Date(parseInt(activity.AktiviteTarihi.replace("/Date(", "").replace(")/", "")));
+
+                // İstediğiniz formata göre tarih yazdırma
+                var formattedDate = date.getDate().toString().padStart(2, '0') + '/' +
+                                    (date.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                                    date.getFullYear() + ' ' +
+                                    date.getHours().toString().padStart(2, '0') + ':' +
+                                    date.getMinutes().toString().padStart(2, '0') + ':' +
+                                    date.getSeconds().toString().padStart(2, '0');
+                cell3.textContent = formattedDate;
+                row.appendChild(cell3);
+
+                tbody.appendChild(row);
+            });
+        }
+    });
+}
+
+
+        function closeActivityModal() {
+            document.getElementById("activityModal").style.display = "none";
+        }
+
+        function handleActivitySubmit() {
+            // Form gönderimi işlemleri ve toastr bildirimleri
+            toastr.success("Aktivite başarıyla eklendi.", "Başarılı");
+            return true;
+        }
+
+        function filterTable() {
+            // Tablo filtreleme işlemleri
+            var input = document.getElementById("searchInput");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("customerTable");
+            var trs = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < trs.length; i++) {
+                var tds = trs[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < tds.length; j++) {
+                    if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                trs[i].style.display = found ? "" : "none";
+            }
+        }
+
+        function handleEditSubmit(event) {
+            event.preventDefault(); // Formun gönderilmesini durdurur
+
+            var form = document.getElementById("editForm");
+            var formData = new FormData(form);
+
+            $.ajax({
+                url: form.action,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success('Müşteri bilgileri başarıyla güncellendi!', 'Başarılı');
+                        closeEditModal();
+                        // Sayfayı yenilemek yerine, AJAX başarılı olduğunda bir işlem yapabilirsiniz.
+                        // Örneğin, tabloyu güncelleyebilirsiniz.
+                    } else {
+                        toastr.error('Güncelleme sırasında bir hata oluştu.', 'Hata');
+                    }
+                },
+                error: function () {
+                    toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.', 'Hata');
+                }
+            });
+        }
+
+
+        function handleActivitySubmit() {
+            var form = document.getElementById("activityForm");
+            var formData = new FormData(form);
+
+            $.ajax({
+                url: form.action,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    toastr.success('Aktivite başarıyla eklendi!', 'Başarılı');
+                    closeActivityModal();
+                    // Sayfayı yenilemek yerine, AJAX başarılı olduğunda bir işlem yapabilirsiniz.
+                    // Örneğin, aktiviteleri güncelleyebilirsiniz.
+                },
+                error: function () {
+                    toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.', 'Hata');
+                }
+            });
+
+            return false; // Formun sayfa yenilemeden gönderilmesini sağlar
+        }
+            </script>
+</body>
+</html>
